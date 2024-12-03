@@ -14,8 +14,10 @@
 
         {% if signup %}
         <form method="POST" action="{{ url_for('auth.verify_signup_otp_post', email=email) }}" class="auth-form">
+            {{ form.csrf_token }}
         {% else %}
         <form method="POST" action="{{ url_for('auth.verify_otp_post', email=email) }}" class="auth-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         {% endif %}
             <div class="field">
                 <div class="control has-icons-left">

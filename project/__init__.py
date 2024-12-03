@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import os
+from flask_talisman import Talisman
+from flask_wtf.csrf import CSRFProtect
 
 # Load environment variables
 load_dotenv()
@@ -17,6 +19,7 @@ limiter = Limiter(get_remote_address)
 def create_app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = secret_key
+    app.config['WTF_CSRF_SECRET_KEY'] = secret_key
     
     # Use PostgreSQL in production, SQLite in development
     if os.environ.get('FLASK_ENV') == 'production':
@@ -31,6 +34,17 @@ def create_app():
     login_manager.init_app(app)
 
     limiter.init_app(app)
+
+    # Add security headers
+    Talisman(app, 
+        force_https=True,
+        content_security_policy=None,  # Temporarily disable CSP
+        session_cookie_secure=True,
+        session_cookie_http_only=True
+    )
+
+    csrf = CSRFProtect()
+    csrf.init_app(app)
 
     from .models import User
 
@@ -49,6 +63,14 @@ def create_app():
         # Initialize admin user within the app context
         from .auth import init_admin
         init_admin()
+
+    @app.after_request
+    def add_security_headers(response):
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+        return response
 
     return app
 

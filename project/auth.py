@@ -17,6 +17,9 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 import logging
+from flask_wtf import FlaskForm
+from wtforms import StringField
+from wtforms.validators import DataRequired
 
 
 auth = Blueprint("auth", __name__)
@@ -363,15 +366,23 @@ def verify_otp_post(email):
         return redirect(url_for("auth.verify_otp", email=email))
 
 
+class OTPForm(FlaskForm):
+    otp = StringField('OTP', validators=[DataRequired()])
+
 @auth.route("/verify-signup-otp/<email>", methods=["GET"])
 def verify_signup_otp(email):
-    return render_template("verify_otp.html", email=email, signup=True)
-
+    form = OTPForm()
+    return render_template("verify_otp.html", email=email, signup=True, form=form)
 
 @auth.route("/verify-signup-otp/<email>", methods=["POST"])
 @limiter.limit("5/minute")
 def verify_signup_otp_post(email):
-    otp = request.form.get("otp")
+    form = OTPForm()
+    if not form.validate_on_submit():
+        flash("Invalid form submission. Please try again.")
+        return redirect(url_for("auth.verify_signup_otp", email=email))
+        
+    otp = form.otp.data
     user = User.query.filter_by(email=email).first()
     
     if not user:

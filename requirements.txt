@@ -11,3 +11,5 @@ psycopg2-binary
 werkzeug
 email-validator
 cryptography
+Flask-WTF
+Flask-Talisman

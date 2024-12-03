@@ -6,7 +6,8 @@
     <div class="box">
         {% include 'flash_messages.html' %}
         
-        <form method="POST">
+        <form method="POST" action="{{ url_for('auth.verify_security_answer') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <div class="field">
                 <label class="label">{{ security_question }}</label>
                 <div class="control">

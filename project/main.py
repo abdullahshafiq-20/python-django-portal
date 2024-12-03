@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, send_file, abort
+from flask import Blueprint, render_template, request, flash, redirect, url_for, send_file, abort, current_app
 from flask_login import login_required, current_user
+from flask_wtf.csrf import CSRFProtect
 
 from project.utils import file_signature_valid
 from . import db, env
@@ -10,9 +11,16 @@ from .crypto import cipher
 import base64
 from datetime import datetime
 import io
+import os
+from werkzeug.utils import secure_filename
 
 main = Blueprint("main", __name__)
 
+ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx'}  # Define allowed file types
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @main.route("/")
 def index():
@@ -149,3 +157,23 @@ def get_image(image_id):
     except Exception as e:
         logger.error(f"Failed to decrypt image: {str(e)}")
         abort(500)
+
+@main.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        # Additional validation here
+
+@main.route('/api/endpoint', methods=['POST'])
+def api_endpoint():
+    csrf = current_app.extensions['csrf']
+    csrf.exempt(api_endpoint)
+    # This route will not require CSRF token
+    pass

@@ -8,7 +8,8 @@
 
         {% include 'flash_messages.html' %}
 
-        <form method="POST" action="/signup" class="auth-form">
+        <form method="POST" action="{{ url_for('auth.signup_post') }}" class="auth-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <div class="field">
                 <div class="control has-icons-left">
                     <input class="input" type="email" name="email" placeholder="Email" required>
