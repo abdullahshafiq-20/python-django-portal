@@ -44,3 +44,6 @@ wrapt
 certifi
 charset-normalizer
 idna
+
+# Gunicorn
+gunicorn

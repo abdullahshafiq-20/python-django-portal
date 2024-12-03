@@ -48,3 +48,9 @@ def create_app():
         db.create_all()
 
     return app
+
+# Add this at the bottom of the file
+if __name__ == "__main__":
+    app = create_app()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
