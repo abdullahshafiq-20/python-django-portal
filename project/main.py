@@ -30,7 +30,18 @@ def index():
 @main.route("/profile")
 @login_required
 def profile():
-    return render_template("profile.html", name=current_user.username)
+    # Get user's evaluations if not admin
+    evaluations = None
+    if not current_user.is_admin:
+        evaluations = Evaluation.query.filter_by(user_id=current_user.id)\
+            .order_by(Evaluation.created_at.desc())\
+            .all()
+    
+    return render_template(
+        "profile.html",
+        name=current_user.username,
+        evaluations=evaluations
+    )
 
 @main.route("/password-policy")
 def password_policy():
