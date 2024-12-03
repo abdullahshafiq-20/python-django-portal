@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="column is-4 is-offset-4">
+    <h3 class="title">Verify OTP</h3>
+    <div class="box">
+        {% if signup %}
+        <p class="subtitle">Please enter the verification code sent to your email to complete signup.</p>
+        <form method="POST" action="{{ url_for('auth.verify_signup_otp_post', email=email) }}">
+        {% else %}
+        <p class="subtitle">Please enter the verification code sent to your email to login.</p>
+        <form method="POST" action="{{ url_for('auth.verify_otp_post', email=email) }}">
+        {% endif %}
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="text" name="otp" placeholder="Enter OTP" autofocus="">
+                </div>
+            </div>
+            <button class="button is-block is-info is-large is-fullwidth">Verify OTP</button>
+        </form>
+    </div>
+</div>
+{% endblock %} 

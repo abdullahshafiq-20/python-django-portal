@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="columns is-centered">
+    <div class="column is-4">
+        <div class="box">
+            <h3 class="title has-text-centered">Welcome Back</h3>
+            <p class="subtitle has-text-centered is-6">Please login to continue</p>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="notification is-danger is-light">
+                <button class="delete"></button>
+                {{ messages[0] }}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="/login">
+                <div class="field">
+                    <label class="label">Email</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="email" name="email" placeholder="e.g. alex@example.com" required>
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Password</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="password" name="password" placeholder="Enter your password" required>
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <label class="checkbox">
+                            <input type="checkbox" name="remember">
+                            Remember me
+                        </label>
+                    </div>
+                </div>
+
+                <div class="field has-text-centered">
+                    <div class="g-recaptcha" data-sitekey="{{ captcha_sitekey }}" style="display: inline-block;"></div>
+                </div>
+
+                <div class="field">
+                    <button class="button is-primary is-fullwidth">
+                        <span class="icon">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </span>
+                        <span>Login</span>
+                    </button>
+                </div>
+
+                <div class="has-text-centered mt-4">
+                    <a href="{{ url_for('auth.password_reset_get') }}" class="has-text-grey">
+                        <span class="icon">
+                            <i class="fas fa-key"></i>
+                        </span>
+                        <span>Forgot Password?</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <div class="has-text-centered mt-4">
+            <p class="is-size-7">
+                Don't have an account? 
+                <a href="{{ url_for('auth.signup_get') }}">Sign up</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

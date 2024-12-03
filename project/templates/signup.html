@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="columns is-centered">
+    <div class="column is-4">
+        <div class="box">
+            <h3 class="title has-text-centered">Create Account</h3>
+            <p class="subtitle has-text-centered is-6">Join our community today</p>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="notification is-danger is-light">
+                <button class="delete"></button>
+                {{ messages[0] }}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="/signup">
+                <div class="field">
+                    <label class="label">Email</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="email" name="email" placeholder="e.g. alex@example.com" required>
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Username</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="text" name="username" placeholder="Choose a username" required>
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-user"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Password</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="password" name="password" 
+                               placeholder="Create a strong password" required>
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                    </div>
+                    <p class="help">
+                        <a href="{{ url_for('main.password_policy') }}">View password requirements</a>
+                    </p>
+                </div>
+
+                <div class="field">
+                    <label class="label">Phone Number</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="tel" name="phone-no" 
+                               placeholder="+44 7123 456789" required>
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-phone"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="field has-text-centered">
+                    <div class="g-recaptcha" data-sitekey="{{ captcha_sitekey }}" style="display: inline-block;"></div>
+                </div>
+
+                <div class="field">
+                    <button class="button is-primary is-fullwidth">
+                        <span class="icon">
+                            <i class="fas fa-user-plus"></i>
+                        </span>
+                        <span>Create Account</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="has-text-centered mt-4">
+            <p class="is-size-7">
+                Already have an account? 
+                <a href="{{ url_for('auth.login_get') }}">Login</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

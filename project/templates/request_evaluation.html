@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="columns is-centered">
+    <div class="column is-8">
+        <div class="box">
+            <h1 class="title has-text-centered">Request Item Evaluation</h1>
+            <p class="subtitle has-text-centered is-6">Please provide details about your item</p>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="notification is-danger is-light">
+                <button class="delete"></button>
+                {{ messages[0] }}
+            </div>
+            {% endif %}
+            {% endwith %}
+            
+            <form method="POST" enctype="multipart/form-data" class="mt-5">
+                <!-- Item Description -->
+                <div class="field">
+                    <label class="label">Item Description</label>
+                    <div class="control">
+                        <textarea class="textarea" name="item_description" 
+                                placeholder="Please describe your item in detail including:
+• Item type and category
+• Condition and any damage
+• Age or period
+• Markings, signatures, or hallmarks
+• Size or dimensions
+• Any known history or provenance" 
+                                rows="6" required></textarea>
+                    </div>
+                    <p class="help">Provide as much detail as possible to help with the evaluation</p>
+                </div>
+
+                <!-- Contact Preference -->
+                <div class="field">
+                    <label class="label">Preferred Contact Method</label>
+                    <div class="control has-icons-left">
+                        <div class="select is-fullwidth">
+                            <select name="contact_preference" required>
+                                <option value="">Select contact method</option>
+                                <option value="email">Email ({{ current_user.email }})</option>
+                                <option value="phone">Phone ({{ current_user.phone_number }})</option>
+                            </select>
+                        </div>
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-address-card"></i>
+                        </span>
+                    </div>
+                    <p class="help">How would you like us to contact you with the evaluation?</p>
+                </div>
+                
+                <!-- Best Time to Contact (if phone selected) -->
+                <div class="field" id="phone-time-field" style="display: none;">
+                    <label class="label">Best Time to Call</label>
+                    <div class="control has-icons-left">
+                        <div class="select is-fullwidth">
+                            <select name="contact_time">
+                                <option value="">Select preferred time</option>
+                                <option value="morning">Morning (9AM - 12PM)</option>
+                                <option value="afternoon">Afternoon (12PM - 5PM)</option>
+                                <option value="evening">Evening (5PM - 8PM)</option>
+                            </select>
+                        </div>
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-clock"></i>
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Item Photos -->
+                <div class="field">
+                    <label class="label">Item Photos</label>
+                    <div class="file has-name is-fullwidth">
+                        <label class="file-label">
+                            <input class="file-input" type="file" name="item_photos" 
+                                   multiple accept="image/*" required>
+                            <span class="file-cta">
+                                <span class="file-icon">
+                                    <i class="fas fa-upload"></i>
+                                </span>
+                                <span class="file-label">
+                                    Choose photos...
+                                </span>
+                            </span>
+                            <span class="file-name" id="filename">
+                                No files selected
+                            </span>
+                        </label>
+                    </div>
+                    <p class="help">Upload clear photos from multiple angles. Max 5 photos.</p>
+                </div>
+                
+                <!-- CAPTCHA -->
+                <div class="field has-text-centered">
+                    <div class="g-recaptcha" data-sitekey="{{ captcha_sitekey }}" 
+                         style="display: inline-block;"></div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="field has-text-centered">
+                    {% if current_user.email_verified %}
+                        <button type="submit" class="button is-primary is-medium">
+                            <span class="icon">
+                                <i class="fas fa-paper-plane"></i>
+                            </span>
+                            <span>Submit Request</span>
+                        </button>
+                    {% else %}
+                        <button type="submit" class="button is-primary is-medium" disabled>
+                            <span class="icon">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                            <span>Verify Email First</span>
+                        </button>
+                        <p class="help is-danger mt-2">You need to verify your email before submitting evaluations.</p>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+
+        <!-- Previous Evaluations -->
+        <div class="box mt-6">
+            <h2 class="title is-4 has-text-centered">Previous Evaluations</h2>
+            {% if previous_evaluations %}
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Item</th>
+                                <th>Status</th>
+                                <th>Value</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for eval in previous_evaluations %}
+                            <tr>
+                                <td>{{ eval.created_at.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ eval.item_description[:50] }}...</td>
+                                <td>
+                                    <span class="tag 
+                                        {% if eval.status == 'completed' %}is-success
+                                        {% elif eval.status == 'pending' %}is-warning
+                                        {% else %}is-danger{% endif %}">
+                                        {{ eval.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if eval.estimated_value %}
+                                        ${{ "%.2f"|format(eval.estimated_value) }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('main.view_evaluation', eval_id=eval.id) }}" 
+                                       class="button is-small is-info">
+                                        <span class="icon">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="has-text-centered">No previous evaluations found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // File input handling
+    const fileInput = document.querySelector('.file-input');
+    const fileName = document.querySelector('.file-name');
+    
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            if (fileInput.files.length === 1) {
+                fileName.textContent = fileInput.files[0].name;
+            } else {
+                fileName.textContent = `${fileInput.files.length} files selected`;
+            }
+        } else {
+            fileName.textContent = 'No files selected';
+        }
+    });
+
+    // Contact preference handling
+    const contactSelect = document.querySelector('select[name="contact_preference"]');
+    const phoneTimeField = document.getElementById('phone-time-field');
+    
+    contactSelect.addEventListener('change', () => {
+        if (contactSelect.value === 'phone') {
+            phoneTimeField.style.display = 'block';
+            phoneTimeField.querySelector('select').required = true;
+        } else {
+            phoneTimeField.style.display = 'none';
+            phoneTimeField.querySelector('select').required = false;
+        }
+    });
+
+    // Notification handling
+    const deleteButtons = document.querySelectorAll('.notification .delete');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            button.parentElement.remove();
+        });
+    });
+});
+</script>
+{% endblock %}
