@@ -1,36 +1,46 @@
-Flask==3.0.2
-Flask-Login==0.6.3
-Flask-SQLAlchemy==3.1.1
-Flask-Limiter==3.5.1
-Werkzeug==3.0.1
-Jinja2==3.1.3
-itsdangerous==2.1.2
+# Flask and Extensions
+Flask
+Flask-Login
+Flask-SQLAlchemy
+Flask-Limiter
+Werkzeug
+Jinja2
+itsdangerous
 
-SQLAlchemy==2.0.28
+# Database
+SQLAlchemy
 
-cryptography==42.0.5
-pyotp==2.9.0
+# Security and Encryption
+cryptography
+pyotp
 
-python-dotenv==1.0.1
+# Environment and Configuration
+python-dotenv
 
-requests==2.31.0
-resend==0.7.2
-urllib3==2.2.1
+# HTTP and API
+requests
+resend
+urllib3
 
-blinker==1.7.0
+# Email
+blinker
 
-MarkupSafe==2.1.5
-click==8.1.7
-packaging==24.0
-typing_extensions==4.10.0
+# Utilities
+MarkupSafe
+click
+packaging
+typing_extensions
 
-gunicorn==21.2.0
-whitenoise==6.6.0
+# Development and Deployment
+gunicorn
+whitenoise
 
-limits==3.9.0
-ordered-set==4.1.0
-wrapt==1.16.0
+# Rate Limiting
+limits
+ordered-set
+wrapt
 
-certifi==2024.2.2
-charset-normalizer==3.3.2
-idna==3.6
+# Parsing and Formatting
+certifi
+charset-normalizer
+idna
