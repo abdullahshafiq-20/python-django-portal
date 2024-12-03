@@ -235,7 +235,7 @@ def password_reset_post():
 You've requested a password reset. If this wasn't you, please ignore this email.
 
 Click on the following link to reset your password:
-http://127.0.0.1:5000/reset-password/{token_urlsafe}
+https://lovejoy-antique.onrender.com/reset-password/{token_urlsafe}
 
 This link will expire in 30 minutes.
 """
