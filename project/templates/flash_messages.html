@@ -1,0 +1,21 @@
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+    {% for message in messages %}
+    <div class="notification is-info is-light">
+        <button class="delete"></button>
+        {{ message | safe }}
+    </div>
+    {% endfor %}
+{% endif %}
+{% endwith %}
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+        const $notification = $delete.parentNode;
+        $delete.addEventListener('click', () => {
+            $notification.parentNode.removeChild($notification);
+        });
+    });
+});
+</script> 

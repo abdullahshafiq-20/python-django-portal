@@ -46,14 +46,15 @@ def create_app():
 
     with app.app_context():
         db.create_all()
-
-    from .auth import init_admin
-    init_admin()
+        # Initialize admin user within the app context
+        from .auth import init_admin
+        init_admin()
 
     return app
 
 # Add this at the bottom of the file
+app = create_app()
+
 if __name__ == "__main__":
-    app = create_app()
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)

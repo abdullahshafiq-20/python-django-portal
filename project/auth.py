@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, session
 from flask_login import current_user, login_user, logout_user, login_required
 from . import db, env, secret_key, limiter
 from .models import User, PasswordReset, Evaluation
@@ -9,7 +9,7 @@ import resend
 from datetime import datetime
 from urllib import parse
 from uuid import uuid4
-from .config import PASSWORD_RESET_TIMEOUT
+from .config import PASSWORD_RESET_TIMEOUT, ADMIN_EMAIL, ADMIN_PASSWORD
 from markupsafe import Markup
 import pyotp
 import smtplib
@@ -22,9 +22,6 @@ import logging
 auth = Blueprint("auth", __name__)
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-
-ADMIN_EMAIL = "admin@gmail.com"
-ADMIN_PASSWORD = "admin123"  # In production, use a more secure password
 
 
 def send_otp_email(email, otp):
@@ -96,6 +93,10 @@ def login_post():
         return redirect(url_for("auth.login_get"))
 
     login_user(user, remember=remember)
+    
+    # Check if user is admin and redirect accordingly
+    if user.email == ADMIN_EMAIL:
+        return redirect(url_for("auth.admin_dashboard"))
     return redirect(url_for("main.profile"))
 
 
@@ -128,6 +129,8 @@ def signup_post():
     username = request.form.get("username")
     password = request.form.get("password")
     phone_no = request.form.get("phone-no")
+    security_question = request.form.get("security_question")
+    security_answer = request.form.get("security_answer")
 
     user = User.query.filter_by(email=email).first()
 
@@ -157,7 +160,9 @@ def signup_post():
         phone_number=phone_no,
         email_verified=False,  # Set to False until OTP verification
         otp=otp,
-        otp_created_at=datetime.utcnow()
+        otp_created_at=datetime.utcnow(),
+        security_question=security_question,
+        security_answer=security_answer.lower()
     )
 
     # Send OTP email
@@ -215,50 +220,79 @@ def password_reset_post():
 
     if is_bot(request):
         flash("Captcha failed")
-        return redirect(url_for("auth.signup_get"))
-
-    token = str(uuid4())
-    token_urlsafe = parse.quote_plus(token)
-
-    reset = PasswordReset(for_user=user.id, token=token)
-    db.session.add(reset)
-    db.session.commit()
-
-    # Use Gmail SMTP for password reset email
-    sender_email = env.get('EMAIL_ADDRESS')
-    sender_password = env.get('EMAIL_PASSWORD')
-    
-    msg = MIMEMultipart()
-    msg['From'] = sender_email
-    msg['To'] = email
-    msg['Subject'] = "Password Reset Request"
-    
-    body = f"""Hello {user.username}!
-    
-You've requested a password reset. If this wasn't you, please ignore this email.
-
-Click on the following link to reset your password:
-https://lovejoy-antique.onrender.com/reset-password/{token_urlsafe}
-
-This link will expire in 30 minutes.
-"""
-    
-    msg.attach(MIMEText(body, 'plain'))
-    
-    try:
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(sender_email, sender_password)
-        text = msg.as_string()
-        server.sendmail(sender_email, email, text)
-        server.quit()
-        
-        flash(f"We've sent you a password reset email at {email}")
-        return redirect(url_for("auth.login_get"))
-    except Exception as e:
-        logger.error(f"Failed to send password reset email: {str(e)}")
-        flash("Failed to send password reset email. Please try again.")
         return redirect(url_for("auth.password_reset_get"))
+
+    # Store email in session for security question verification
+    session['reset_email'] = email
+    return redirect(url_for('auth.verify_security_question'))
+
+
+@auth.route("/verify-security", methods=["GET"])
+def verify_security_question():
+    email = session.get('reset_email')
+    if not email:
+        return redirect(url_for('auth.password_reset_get'))
+    
+    user = User.query.filter_by(email=email).first()
+    return render_template('verify_security.html', security_question=user.security_question)
+
+
+@auth.route("/verify-security", methods=["POST"])
+@limiter.limit("5/minute")
+def verify_security_answer():
+    email = session.get('reset_email')
+    if not email:
+        flash("Session expired. Please try again.")
+        return redirect(url_for('auth.verify_security_question'))
+    
+    user = User.query.filter_by(email=email).first()
+    answer = request.form.get('security_answer', '').lower()
+    
+    if answer == user.security_answer:
+        token = str(uuid4())
+        token_urlsafe = parse.quote_plus(token)
+
+        reset = PasswordReset(for_user=user.id, token=token)
+        db.session.add(reset)
+        db.session.commit()
+
+        # Send password reset email
+        sender_email = env.get('EMAIL_ADDRESS')
+        sender_password = env.get('EMAIL_PASSWORD')
+        
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = email
+        msg['Subject'] = "Password Reset Request"
+        
+        body = f"""Hello {user.username}!
+        
+        Click on the following link to reset your password:
+        https://lovejoy-antique.onrender.com/reset-password/{token_urlsafe}
+
+        This link will expire in 30 minutes.
+        """
+        
+        msg.attach(MIMEText(body, 'plain'))
+        
+        try:
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.starttls()
+            server.login(sender_email, sender_password)
+            text = msg.as_string()
+            server.sendmail(sender_email, email, text)
+            server.quit()
+            
+            flash(f"We've sent you a password reset email at {email}")
+            session.pop('reset_email', None)  # Clear the session
+            return redirect(url_for("auth.login_get"))
+        except Exception as e:
+            logger.error(f"Failed to send password reset email: {str(e)}")
+            flash("Failed to send password reset email. Please try again.")
+            return redirect(url_for("auth.password_reset_get"))
+    else:
+        flash("Incorrect security answer")
+        return redirect(url_for('auth.verify_security_question'))
 
 
 @auth.route('/reset-password/<token>', methods=["GET"])
@@ -311,12 +345,12 @@ def verify_otp_post(email):
     
     if not user:
         flash("Invalid request")
-        return redirect(url_for("auth.login_get"))
+        return redirect(url_for("auth.verify_otp", email=email))
     
     # Check if OTP is expired (5 minutes)
     if datetime.utcnow() - user.otp_created_at > timedelta(minutes=5):
-        flash("OTP has expired. Please login again.")
-        return redirect(url_for("auth.login_get"))
+        flash("OTP has expired. Please try again.")
+        return redirect(url_for("auth.verify_otp", email=email))
     
     if user.otp == otp:
         user.otp = None
@@ -382,11 +416,13 @@ def init_admin():
 @login_required
 def admin_dashboard():
     # Only allow admin access
-    if not current_user.email == ADMIN_EMAIL:
-        abort(403)
+    if not current_user.is_admin:
+        flash("Access denied. Admin privileges required.")
+        return redirect(url_for("main.profile"))
         
     users = User.query.all()
-    evaluations = Evaluation.query.all()
+    evaluations = Evaluation.query.order_by(Evaluation.created_at.desc()).all()
+    
     return render_template(
         "admin_dashboard.html", 
         users=users, 

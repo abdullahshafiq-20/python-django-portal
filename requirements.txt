@@ -1,49 +1,12 @@
-# Flask and Extensions
-Flask
-Flask-Login
-Flask-SQLAlchemy
-Flask-Limiter
-Werkzeug
-Jinja2
-itsdangerous
-
-# Database
-SQLAlchemy
-
-# Security and Encryption
-cryptography
-pyotp
-
-# Environment and Configuration
+flask
+flask-sqlalchemy
+flask-login
 python-dotenv
-
-# HTTP and API
-requests
+flask-limiter
+itsdangerous
 resend
-urllib3
-
-# Email
-blinker
-
-# Utilities
-MarkupSafe
-click
-packaging
-typing_extensions
-
-# Development and Deployment
+pyotp
 gunicorn
-whitenoise
-
-# Rate Limiting
-limits
-ordered-set
-wrapt
-
-# Parsing and Formatting
-certifi
-charset-normalizer
-idna
-
-# Gunicorn
-gunicorn
+psycopg2-binary
+werkzeug
+email-validator

@@ -30,9 +30,12 @@ def password_policy():
 
 
 
-@main.route("/request-evaluation", methods=["GET"])
+@main.route("/request-evaluation")
 @login_required
 def request_evaluation():
+    if current_user.is_admin:
+        return redirect(url_for('auth.admin_dashboard'))
+    
     # Get user's previous evaluations
     previous_evaluations = Evaluation.query.filter_by(user_id=current_user.id).order_by(Evaluation.created_at.desc()).all()
     
@@ -95,20 +98,20 @@ def submit_evaluation():
     flash("Your evaluation request has been submitted successfully!")
     return redirect(url_for("main.request_evaluation"))
 
-@main.route("/evaluation/<int:eval_id>")
+@main.route("/view-evaluation/<int:eval_id>")
 @login_required
 def view_evaluation(eval_id):
     evaluation = Evaluation.query.get_or_404(eval_id)
     
-    # Ensure user can only view their own evaluations
-    if evaluation.user_id != current_user.id and not current_user.is_admin:
+    # Only allow admin or the evaluation owner to view
+    if not (current_user.is_admin or evaluation.user_id == current_user.id):
         flash("You don't have permission to view this evaluation")
-        return redirect(url_for("main.profile"))
+        return redirect(url_for('main.profile'))
     
     # Get the photos
     photo_ids = evaluation.item_photos.split(",") if evaluation.item_photos else []
     photos = Image.query.filter(Image.id.in_(photo_ids)).all() if photo_ids else []
-    
+        
     return render_template(
         "view_evaluation.html",
         evaluation=evaluation,
@@ -119,37 +122,12 @@ def view_evaluation(eval_id):
 @main.route("/evaluations")
 @login_required
 def evaluations():
-    # Do not show the page if the user isn't an admin
     if not current_user.is_admin:
-        return redirect(url_for("main.profile"))
-
-    evaluations = Evaluation.query.all()
-    evaluation_data = []
+        flash("Access denied. Admin privileges required.")
+        return redirect(url_for('main.profile'))
     
-    for eval in evaluations:
-        user = User.query.get(eval.user_id)
-        photo_ids = eval.item_photos.split(",") if eval.item_photos else []
-        photos = []
-        
-        for photo_id in photo_ids:
-            try:
-                image = Image.query.get(int(photo_id))
-                if image:
-                    decrypted_image = cipher.decrypt(image.image)
-                    photos.append({
-                        'id': image.id,
-                        'data': base64.b64encode(decrypted_image).decode()
-                    })
-            except Exception as e:
-                logger.error(f"Failed to process image {photo_id}: {str(e)}")
-        
-        evaluation_data.append({
-            'evaluation': eval,
-            'user': user,
-            'photos': photos
-        })
-
-    return render_template("evaluations.html", evaluations=evaluation_data)
+    evaluations = Evaluation.query.all()
+    return render_template("evaluations.html", evaluations=evaluations)
 
 @main.route("/image/<int:image_id>")
 @login_required

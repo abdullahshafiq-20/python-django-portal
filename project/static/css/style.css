@@ -1,0 +1,311 @@
+/* Professional Form Styling */
+.custom-file-upload {
+    border: 2px dashed #4a90e2;
+    border-radius: 8px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    width: 100%;
+}
+
+.custom-file-upload:hover {
+    background: #edf2f7;
+    border-color: #2c5282;
+}
+
+.custom-file-upload i {
+    font-size: 48px;
+    color: #4a90e2;
+    margin-bottom: 16px;
+}
+
+.custom-file-upload p {
+    margin: 5px 0;
+    color: #4a5568;
+}
+
+.custom-file-upload p:first-of-type {
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+.file-names {
+    margin-top: 15px;
+    padding: 10px;
+    background: #f1f5f9;
+    border-radius: 6px;
+    font-size: 0.9em;
+}
+
+.file-names div {
+    padding: 5px 10px;
+    margin: 2px 0;
+    background: white;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Professional Form Elements */
+.input, .textarea, .select select {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.input:focus, .textarea:focus, .select select:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+/* Professional Buttons */
+.button {
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.button.is-primary {
+    background: linear-gradient(135deg, #4a90e2, #357abd);
+    border: none;
+}
+
+.button.is-primary:hover {
+    background: linear-gradient(135deg, #357abd, #2c5282);
+    transform: translateY(-1px);
+}
+
+/* Card and Box Styling */
+.box, .card {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-radius: 8px;
+}
+
+/* Table Styling */
+.table {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.table th {
+    background: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+/* Notification Styling */
+.notification {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Image Preview Grid */
+.image-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.preview-item {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; /* Creates a square aspect ratio */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.preview-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.remove-image {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.remove-image:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* Drag and Drop Highlight */
+.custom-file-upload.drag-over {
+    background: #e6f0fa;
+    border-color: #2c5282;
+    transform: scale(1.01);
+}
+
+/* Auth Pages Styling */
+.auth-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.auth-box {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.auth-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.auth-subtitle {
+    text-align: center;
+    color: #64748b;
+    margin-bottom: 25px;
+    font-size: 0.95rem;
+}
+
+.auth-form .field {
+    margin-bottom: 20px;
+}
+
+.auth-form .input {
+    height: 45px;
+    padding-left: 45px;
+    font-size: 1rem;
+    border: 2px solid #e2e8f0;
+}
+
+.auth-form .icon.is-left {
+    height: 45px;
+    width: 45px;
+}
+
+.auth-form .icon i {
+    font-size: 1.2rem;
+    color: #64748b;
+}
+
+.auth-form .button {
+    height: 45px;
+    font-size: 1rem;
+}
+
+.auth-links {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.auth-links a {
+    color: black;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-weight: 500;
+}
+
+.auth-links a:hover {
+    color: #4a90e2;
+    text-decoration: underline;
+}
+
+.g-recaptcha {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+/* OTP Input Styling */
+.otp-input {
+    letter-spacing: 8px;
+    font-size: 1.5rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Security Question Styling */
+.select:not(.is-multiple):not(.is-loading)::after {
+    border-color: #4a90e2;
+}
+
+.select select {
+    height: 45px;
+    padding-left: 15px;
+    font-size: 1rem;
+}
+
+/* Password Requirements */
+.password-requirements {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 5px;
+}
+
+.password-requirements a {
+    color: #4a90e2;
+    text-decoration: none;
+}
+
+.password-requirements a:hover {
+    text-decoration: underline;
+}
+
+/* Auth Links Styling */
+.auth-links {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+.auth-links p {
+    margin: 0;
+    color: black !important;
+}
+
+.auth-links a {
+    color: black !important;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-weight: 500;
+}
+
+.auth-links a:hover {
+    color: #4a90e2 !important;
+    text-decoration: underline;
+}
+
+/* Specific styling for forgot password link */
+.forgot-password-link {
+    color: black !important;  /* Override any other styles */
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+.forgot-password-link:hover {
+    color: #4a90e2 !important;  /* Blue color on hover */
+    opacity: 1;
+    text-decoration: underline;
+}
+ 

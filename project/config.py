@@ -1034,3 +1034,6 @@ PASSWORD_BLACKLIST = [
     "bang",
     "control",
 ]
+
+ADMIN_EMAIL = "admin@gmail.com"
+ADMIN_PASSWORD = "admin123"

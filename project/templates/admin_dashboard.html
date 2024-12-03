@@ -2,15 +2,17 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2>Admin Dashboard</h2>
+    {% include 'flash_messages.html' %}
+    
+    <h2 class="title">Admin Dashboard</h2>
     
     <div class="card mb-4">
         <div class="card-header">
-            <h3>Users</h3>
+            <h3 class="subtitle">Users</h3>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table">
+                <table class="table is-fullwidth">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -38,30 +40,70 @@
 
     <div class="card">
         <div class="card-header">
-            <h3>Evaluations</h3>
+            <h3 class="subtitle">Evaluations</h3>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table">
+                <table class="table is-fullwidth">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>User ID</th>
-                            <th>Item Name</th>
+                            <th>User</th>
                             <th>Description</th>
+                            <th>Contact</th>
                             <th>Status</th>
+                            <th>Photos</th>
                             <th>Created At</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for eval in evaluations %}
                         <tr>
                             <td>{{ eval.id }}</td>
-                            <td>{{ eval.user_id }}</td>
-                            <td>{{ eval.item_name }}</td>
-                            <td>{{ eval.description[:50] }}...</td>
-                            <td>{{ eval.status }}</td>
+                            <td>
+                                {% set user = users|selectattr('id', 'eq', eval.user_id)|first %}
+                                {{ user.username if user else 'Unknown' }}
+                            </td>
+                            <td>{{ eval.item_description[:100] }}...</td>
+                            <td>
+                                {{ eval.contact_preference }}
+                                {% if eval.contact_time %}
+                                <br>Time: {{ eval.contact_time }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="tag 
+                                    {% if eval.status == 'completed' %}is-success
+                                    {% elif eval.status == 'pending' %}is-warning
+                                    {% else %}is-danger{% endif %}">
+                                    {{ eval.status }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if eval.item_photos %}
+                                    {% set photo_ids = eval.item_photos.split(',') %}
+                                    <div class="columns is-multiline">
+                                        {% for photo_id in photo_ids %}
+                                            <div class="column is-3">
+                                                <figure class="image is-64x64">
+                                                    <img src="{{ url_for('main.get_image', image_id=photo_id) }}" 
+                                                         alt="Item photo">
+                                                </figure>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    No photos
+                                {% endif %}
+                            </td>
                             <td>{{ eval.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            <td>
+                                <a href="{{ url_for('main.view_evaluation', eval_id=eval.id) }}" 
+                                   class="button is-small is-info">
+                                    View
+                                </a>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -70,4 +112,15 @@
         </div>
     </div>
 </div>
+
+<style>
+    .table img {
+        max-width: 64px;
+        max-height: 64px;
+        object-fit: cover;
+    }
+    .table td {
+        vertical-align: middle;
+    }
+</style>
 {% endblock %} 

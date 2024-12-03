@@ -1,86 +1,97 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="columns is-centered">
-    <div class="column is-4">
-        <div class="box">
-            <h3 class="title has-text-centered">Create Account</h3>
-            <p class="subtitle has-text-centered is-6">Join our community today</p>
+<div class="auth-container">
+    <div class="auth-box">
+        <h3 class="auth-title">Create Account</h3>
+        <p class="auth-subtitle">Join our community</p>
 
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            <div class="notification is-danger is-light">
-                <button class="delete"></button>
-                {{ messages[0] }}
+        {% include 'flash_messages.html' %}
+
+        <form method="POST" action="/signup" class="auth-form">
+            <div class="field">
+                <div class="control has-icons-left">
+                    <input class="input" type="email" name="email" placeholder="Email" required>
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-envelope"></i>
+                    </span>
+                </div>
             </div>
-            {% endif %}
-            {% endwith %}
 
-            <form method="POST" action="/signup">
-                <div class="field">
-                    <label class="label">Email</label>
-                    <div class="control has-icons-left">
-                        <input class="input" type="email" name="email" placeholder="e.g. alex@example.com" required>
-                        <span class="icon is-small is-left">
-                            <i class="fas fa-envelope"></i>
-                        </span>
+            <div class="field">
+                <div class="control has-icons-left">
+                    <input class="input" type="text" name="username" placeholder="Username" required>
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-user"></i>
+                    </span>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control has-icons-left">
+                    <input class="input" type="password" name="password" placeholder="Password" required>
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                </div>
+                <p class="password-requirements">
+                    <a href="{{ url_for('main.password_policy') }}">View password requirements</a>
+                </p>
+            </div>
+
+            <div class="field">
+                <div class="control has-icons-left">
+                    <input class="input" type="tel" name="phone-no" placeholder="+44 7123 456789" required>
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-phone"></i>
+                    </span>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <div class="select is-fullwidth">
+                        <select name="security_question" required>
+                            <option value="">Select a security question</option>
+                            <option value="What was your first pet's name?">What was your first pet's name?</option>
+                            <option value="What city were you born in?">What city were you born in?</option>
+                            <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                            <option value="What was the name of your first school?">What was the name of your first school?</option>
+                            <option value="What is your favorite book?">What is your favorite book?</option>
+                        </select>
                     </div>
                 </div>
+            </div>
 
-                <div class="field">
-                    <label class="label">Username</label>
-                    <div class="control has-icons-left">
-                        <input class="input" type="text" name="username" placeholder="Choose a username" required>
-                        <span class="icon is-small is-left">
-                            <i class="fas fa-user"></i>
-                        </span>
-                    </div>
+            <div class="field">
+                <div class="control has-icons-left">
+                    <input class="input" type="text" name="security_answer" placeholder="Your answer" required>
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-key"></i>
+                    </span>
                 </div>
+            </div>
 
-                <div class="field">
-                    <label class="label">Password</label>
-                    <div class="control has-icons-left">
-                        <input class="input" type="password" name="password" 
-                               placeholder="Create a strong password" required>
-                        <span class="icon is-small is-left">
-                            <i class="fas fa-lock"></i>
-                        </span>
-                    </div>
-                    <p class="help">
-                        <a href="{{ url_for('main.password_policy') }}">View password requirements</a>
-                    </p>
+            <div class="field">
+                <div class="control has-text-centered">
+                    <div class="g-recaptcha" data-sitekey="{{ captcha_sitekey }}"></div>
                 </div>
+            </div>
 
-                <div class="field">
-                    <label class="label">Phone Number</label>
-                    <div class="control has-icons-left">
-                        <input class="input" type="tel" name="phone-no" 
-                               placeholder="+44 7123 456789" required>
-                        <span class="icon is-small is-left">
-                            <i class="fas fa-phone"></i>
-                        </span>
-                    </div>
-                </div>
+            <div class="field">
+                <button class="button is-primary is-fullwidth">
+                    <span class="icon">
+                        <i class="fas fa-user-plus"></i>
+                    </span>
+                    <span>Create Account</span>
+                </button>
+            </div>
+        </form>
 
-                <div class="field has-text-centered">
-                    <div class="g-recaptcha" data-sitekey="{{ captcha_sitekey }}" style="display: inline-block;"></div>
-                </div>
-
-                <div class="field">
-                    <button class="button is-primary is-fullwidth">
-                        <span class="icon">
-                            <i class="fas fa-user-plus"></i>
-                        </span>
-                        <span>Create Account</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <div class="has-text-centered mt-4">
-            <p class="is-size-7">
+        <div class="auth-links">
+            <p>
                 Already have an account? 
-                <a href="{{ url_for('auth.login_get') }}">Login</a>
+                <a href="{{ url_for('auth.login_get') }}">Sign in</a>
             </p>
         </div>
     </div>

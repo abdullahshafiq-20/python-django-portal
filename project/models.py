@@ -1,6 +1,7 @@
 from flask_login import UserMixin
 from datetime import datetime
 from . import db
+from .config import ADMIN_EMAIL
 
 
 class User(UserMixin, db.Model):
@@ -15,6 +16,12 @@ class User(UserMixin, db.Model):
     is_admin = db.Column(db.Boolean, default=False)
     otp = db.Column(db.String(6), nullable=True)
     otp_created_at = db.Column(db.DateTime, nullable=True)
+    security_question = db.Column(db.String(200))
+    security_answer = db.Column(db.String(200))
+
+    @property
+    def is_admin(self):
+        return self.email == ADMIN_EMAIL
 
 
 class Image(db.Model):

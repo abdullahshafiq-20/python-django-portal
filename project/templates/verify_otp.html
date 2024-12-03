@@ -1,22 +1,39 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="column is-4 is-offset-4">
-    <h3 class="title">Verify OTP</h3>
-    <div class="box">
+<div class="auth-container">
+    <div class="auth-box">
+        <h3 class="auth-title">Verify OTP</h3>
         {% if signup %}
-        <p class="subtitle">Please enter the verification code sent to your email to complete signup.</p>
-        <form method="POST" action="{{ url_for('auth.verify_signup_otp_post', email=email) }}">
+        <p class="auth-subtitle">Please enter the verification code sent to your email to complete signup.</p>
         {% else %}
-        <p class="subtitle">Please enter the verification code sent to your email to login.</p>
-        <form method="POST" action="{{ url_for('auth.verify_otp_post', email=email) }}">
+        <p class="auth-subtitle">Please enter the verification code sent to your email to login.</p>
+        {% endif %}
+
+        {% include 'flash_messages.html' %}
+
+        {% if signup %}
+        <form method="POST" action="{{ url_for('auth.verify_signup_otp_post', email=email) }}" class="auth-form">
+        {% else %}
+        <form method="POST" action="{{ url_for('auth.verify_otp_post', email=email) }}" class="auth-form">
         {% endif %}
             <div class="field">
-                <div class="control">
-                    <input class="input is-large" type="text" name="otp" placeholder="Enter OTP" autofocus="">
+                <div class="control has-icons-left">
+                    <input class="input otp-input" type="text" name="otp" placeholder="Enter OTP" maxlength="6" autofocus>
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-key"></i>
+                    </span>
                 </div>
             </div>
-            <button class="button is-block is-info is-large is-fullwidth">Verify OTP</button>
+
+            <div class="field">
+                <button class="button is-primary is-fullwidth">
+                    <span class="icon">
+                        <i class="fas fa-check-circle"></i>
+                    </span>
+                    <span>Verify OTP</span>
+                </button>
+            </div>
         </form>
     </div>
 </div>

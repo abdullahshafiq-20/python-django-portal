@@ -1,7 +1,19 @@
 {% extends "base.html" %} 
 
 {% block content %}
-<h1 class="title">
-    Welcome, {{ name }}!
-</h1>
+<div class="container">
+    <h1 class="title">
+        Welcome, {{ current_user.username }}!
+    </h1>
+    
+    {% if not current_user.is_admin %}
+    <div class="buttons">
+        <a href="{{ url_for('main.request_evaluation') }}" class="button is-primary">
+            Request New Evaluation
+        </a>
+    </div>
+    {% endif %}
+    
+    <!-- ... rest of the profile content ... -->
+</div>
 {% endblock %}

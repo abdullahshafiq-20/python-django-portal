@@ -1,9 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="column is-8 is-offset-2">
-    <h1 class="title">Evaluation Details</h1>
-    
+<div class="container">
     <div class="box">
         <div class="columns">
             <div class="column">
@@ -47,10 +45,16 @@
             </div>
             {% endfor %}
         </div>
+        
+        {% if current_user.is_admin %}
+            <a href="{{ url_for('auth.admin_dashboard') }}" class="button is-info">
+                Back to Admin Dashboard
+            </a>
+        {% else %}
+            <a href="{{ url_for('main.profile') }}" class="button is-info">
+                Back to Profile
+            </a>
+        {% endif %}
     </div>
-    
-    <a href="{{ url_for('main.request_evaluation') }}" class="button is-info">
-        Back to Evaluations
-    </a>
 </div>
 {% endblock %} 
