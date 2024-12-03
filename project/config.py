@@ -19,8 +19,6 @@ PASSWORD_POLICY = {
     # Minimum number of numeric characters
     'MIN_NO_OF_NUMERIC_CHARS': 2,
 }
-
-
 ALLOWED_FILETYPES = [
     "avif",
     "gif",

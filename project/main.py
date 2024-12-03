@@ -16,7 +16,7 @@ from werkzeug.utils import secure_filename
 
 main = Blueprint("main", __name__)
 
-ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx'}  # Define allowed file types
+ALLOWED_EXTENSIONS = ALLOWED_FILETYPES  # Define allowed file types
 
 def allowed_file(filename):
     return '.' in filename and \
