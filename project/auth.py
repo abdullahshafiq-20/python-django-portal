@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from . import db, env, secret_key, limiter
-from .models import User, PasswordReset
+from .models import User, PasswordReset, Evaluation
 from werkzeug.security import generate_password_hash, check_password_hash
 from .utils import is_bot, password_meets_security_requirements
 from itsdangerous import URLSafeTimedSerializer
@@ -22,6 +22,9 @@ import logging
 auth = Blueprint("auth", __name__)
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
+ADMIN_EMAIL = "admin@gmail.com"
+ADMIN_PASSWORD = "admin123"  # In production, use a more secure password
 
 
 def send_otp_email(email, otp):
@@ -359,3 +362,33 @@ def verify_signup_otp_post(email):
     else:
         flash("Invalid OTP")
         return redirect(url_for("auth.verify_signup_otp", email=email))
+
+
+def init_admin():
+    """Initialize admin user if not exists"""
+    admin = User.query.filter_by(email=ADMIN_EMAIL).first()
+    if not admin:
+        admin = User(
+            email=ADMIN_EMAIL,
+            username="admin",
+            password=generate_password_hash(ADMIN_PASSWORD),
+            email_verified=True
+        )
+        db.session.add(admin)
+        db.session.commit()
+
+
+@auth.route("/admin")
+@login_required
+def admin_dashboard():
+    # Only allow admin access
+    if not current_user.email == ADMIN_EMAIL:
+        abort(403)
+        
+    users = User.query.all()
+    evaluations = Evaluation.query.all()
+    return render_template(
+        "admin_dashboard.html", 
+        users=users, 
+        evaluations=evaluations
+    )

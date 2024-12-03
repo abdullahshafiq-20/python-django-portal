@@ -47,6 +47,9 @@ def create_app():
     with app.app_context():
         db.create_all()
 
+    from .auth import init_admin
+    init_admin()
+
     return app
 
 # Add this at the bottom of the file
