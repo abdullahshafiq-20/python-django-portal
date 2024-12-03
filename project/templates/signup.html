@@ -30,14 +30,31 @@
 
             <div class="field">
                 <div class="control has-icons-left">
-                    <input class="input" type="password" name="password" placeholder="Password" required>
+                    <input class="input" type="password" name="password" id="password" placeholder="Password" required>
                     <span class="icon is-small is-left">
                         <i class="fas fa-lock"></i>
                     </span>
                 </div>
-                <p class="password-requirements">
+
+                <div class="password-criteria mt-2">
+                    <h6 class="is-size-7 mb-2">Password must contain:</h6>
+                    <ul class="list-unstyled" style="margin-bottom: 10px;">
+                        <li id="length" class="is-size-7"><i class="fas fa-times text-danger"></i> At least 8 characters</li>
+                        <li id="uppercase" class="is-size-7"><i class="fas fa-times text-danger"></i> At least one uppercase letter</li>
+                        <li id="lowercase" class="is-size-7"><i class="fas fa-times text-danger"></i> At least one lowercase letter</li>
+                        <li id="number" class="is-size-7"><i class="fas fa-times text-danger"></i> At least one number</li>
+                        <li id="special" class="is-size-7"><i class="fas fa-times text-danger"></i> At least one special character</li>
+                    </ul>
+                    <div class="progress" style="height: 5px; background-color: #e9ecef; border-radius: 3px;">
+                        <div id="password-strength" class="progress-bar" role="progressbar" 
+                             style="width: 0%; height: 100%; border-radius: 3px; transition: width 0.3s ease-in-out;"
+                             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+
+                <!-- <p class="password-requirements">
                     <a href="{{ url_for('main.password_policy') }}">View password requirements</a>
-                </p>
+                </p> -->
             </div>
 
             <div class="field">
@@ -97,4 +114,123 @@
         </div>
     </div>
 </div>
+
+<style>
+.password-criteria {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.password-criteria ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 10px;
+}
+
+.password-criteria li {
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.text-success {
+    color: #28a745 !important;
+}
+
+.progress {
+    background-color: #e9ecef;
+    border-radius: 3px;
+    height: 5px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    transition: all 0.3s ease-in-out;
+    width: 0;
+}
+
+.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.bg-warning {
+    background-color: #ffc107 !important;
+}
+
+.bg-success {
+    background-color: #28a745 !important;
+}
+
+.password-criteria h6 {
+    color: #333;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+</style>
+
+<script type="text/javascript">
+// Wait for the DOM to be fully loaded
+window.onload = function() {
+    console.log("Script loaded"); // Debug log
+    
+    const passwordInput = document.getElementById('password');
+    if (passwordInput) {
+        console.log("Password input found"); // Debug log
+        
+        passwordInput.addEventListener('input', function(e) {
+            console.log("Input event triggered"); // Debug log
+            
+            const password = e.target.value;
+            const criteria = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+
+            // Update criteria icons and text color
+            Object.keys(criteria).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    const icon = element.querySelector('i');
+                    if (criteria[key]) {
+                        icon.className = 'fas fa-check text-success';
+                        element.style.color = '#28a745';
+                    } else {
+                        icon.className = 'fas fa-times text-danger';
+                        element.style.color = '#333';
+                    }
+                }
+            });
+
+            // Calculate and update progress bar
+            const metCriteria = Object.values(criteria).filter(Boolean).length;
+            const strengthPercent = (metCriteria / 5) * 100;
+            const progressBar = document.getElementById('password-strength');
+            
+            if (progressBar) {
+                // Update width and color
+                progressBar.style.width = strengthPercent + '%';
+                
+                if (metCriteria <= 2) {
+                    progressBar.className = 'progress-bar bg-danger';
+                } else if (metCriteria <= 4) {
+                    progressBar.className = 'progress-bar bg-warning';
+                } else {
+                    progressBar.className = 'progress-bar bg-success';
+                }
+            }
+        });
+    } else {
+        console.log("Password input not found"); // Debug log
+    }
+};
+</script>
 {% endblock %}

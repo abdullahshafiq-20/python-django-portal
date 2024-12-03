@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://kit.fontawesome.com/53aa6abd3b.js" crossorigin="anonymous"></script>
     <script src='https://www.google.com/recaptcha/api.js' async defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         .hero.is-primary {
             background: linear-gradient(135deg, #4a90e2, #2c3e50);
@@ -44,7 +45,9 @@
                 <div class="container">
                     <div class="navbar-brand">
                         <div class="navbar-item">
-                            <h1 class="title is-4">Lovejoys Antiques</h1>
+                            <a href="{{ url_for('main.index') }}">
+                                <h1 class="title is-4">Lovejoys Antiques</h1>
+                            </a>
                         </div>
                     </div>
                     <div class="navbar-menu">

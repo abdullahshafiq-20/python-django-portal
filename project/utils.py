@@ -26,27 +26,26 @@ def is_bot(request):
     result = verify_response.json()
     return not result['success']  # Return True if verification failed
 
-def password_meets_security_requirements(password: str) -> bool:
-    nonalpha = "'-!\"£#$%&()*,./:;?@[]^_`{|}~+<=>"
-    nums = "0123456789"
-    lowerchars = "abcdefghijklmnopqrstuvwxyz"
-    upperchars = lowerchars.upper()
-
-    no_of_alpha_chars = len(list(filter(lambda c: c in nonalpha, password)))
-    no_of_upper_chars = len(list(filter(lambda c: c in upperchars, password)))
-    no_of_lower_chars = len(list(filter(lambda c: c in lowerchars, password)))
-    no_of_numeric_chars = len(list(filter(lambda c: c in nums, password)))
-    password_too_common = password in PASSWORD_BLACKLIST
-
-    return (
-        no_of_alpha_chars >= PASSWORD_POLICY["MIN_NO_OF_ALPHA_CHARS"]
-        and no_of_upper_chars >= PASSWORD_POLICY["MIN_NO_OF_UPPERCASE_CHARS"]
-        and no_of_lower_chars >= PASSWORD_POLICY["MIN_NO_OF_LOWERCASE_CHARS"]
-        and no_of_numeric_chars >= PASSWORD_POLICY["MIN_NO_OF_NUMERIC_CHARS"]
-        and len(password) >= PASSWORD_POLICY["MINIMUM_LENGTH"]
-        and not password_too_common
-    )
-
+def password_meets_security_requirements(password):
+    """
+    Check if password meets security requirements:
+    - At least 8 characters long
+    - Contains at least one uppercase letter
+    - Contains at least one lowercase letter
+    - Contains at least one number
+    - Contains at least one special character
+    """
+    if len(password) < 8:
+        return False
+    if not any(c.isupper() for c in password):
+        return False
+    if not any(c.islower() for c in password):
+        return False
+    if not any(c.isdigit() for c in password):
+        return False
+    if not any(c in '!@#$%^&*(),.?":{}|<>' for c in password):
+        return False
+    return True
 
 def file_signature_valid(extension: str, file: bytes) -> bool:
     """
